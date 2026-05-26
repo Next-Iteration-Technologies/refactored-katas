@@ -237,26 +237,31 @@ public class CharacterizationTest {
     // ========== ADDITIONAL EDGE CASES ==========
     
     @Test
-    @DisplayName("CHARACTERIZATION: Very large rental periods should calculate correctly")
-    public void characterizeVeryLargeRentalPeriods() {
+    @DisplayName("CHARACTERIZATION: Very large rental periods - individual charges")
+    public void characterizeVeryLargeRentalPeriodIndividualCharges() {
         Customer customer = new Customer("Test");
         customer.addRental(new Rental(new RegularMovie("R"), 100));
         customer.addRental(new Rental(new NewReleaseMovie("N"), 100));
         customer.addRental(new Rental(new ChildrensMovie("C"), 100));
-        
+
         String statement = customer.generateStatement(formatter);
-        
-        // Regular: 2.0 + (100-2)*1.5 = 2.0 + 147.0 = 149.0
+
         assertTrue(statement.contains("149.0"));
-        // New Release: 100*3.0 = 300.0
         assertTrue(statement.contains("300.0"));
-        // Children: 1.5 + (100-3)*1.5 = 1.5 + 145.5 = 147.0
         assertTrue(statement.contains("147.0"));
-        
-        // Total: 149.0 + 300.0 + 147.0 = 596.0
+    }
+
+    @Test
+    @DisplayName("CHARACTERIZATION: Very large rental periods - totals")
+    public void characterizeVeryLargeRentalPeriodTotals() {
+        Customer customer = new Customer("Test");
+        customer.addRental(new Rental(new RegularMovie("R"), 100));
+        customer.addRental(new Rental(new NewReleaseMovie("N"), 100));
+        customer.addRental(new Rental(new ChildrensMovie("C"), 100));
+
+        String statement = customer.generateStatement(formatter);
+
         assertTrue(statement.contains("Amount owed is 596.0"));
-        
-        // Points: 1 + 2 + 1 = 4
         assertTrue(statement.contains("You earned 4 frequent renter points"));
     }
     
@@ -321,21 +326,29 @@ public class CharacterizationTest {
     }
     
     @Test
-    @DisplayName("CHARACTERIZATION: Rentals maintain consistent calculation across formatters")
-    public void characterizeConsistentCalculationAcrossFormatters() {
+    @DisplayName("CHARACTERIZATION: Text formatter calculates correct totals")
+    public void characterizeTextFormatterCalculation() {
         Customer customer = new Customer("Test");
         customer.addRental(new Rental(new RegularMovie("Movie A"), 3));
         customer.addRental(new Rental(new NewReleaseMovie("Movie B"), 2));
-        
-        String textStatement = customer.generateStatement(new TextStatementFormatter());
-        String htmlStatement = customer.generateStatement(new movierental.formatters.HtmlStatementFormatter());
-        
-        // Both should calculate same totals
-        assertTrue(textStatement.contains("Amount owed is 9.5"));
-        assertTrue(htmlStatement.contains("<em>9.5</em>"));
-        
-        assertTrue(textStatement.contains("You earned 3 frequent renter points"));
-        assertTrue(htmlStatement.contains("<em>3</em> frequent renter points"));
+
+        String statement = customer.generateStatement(new TextStatementFormatter());
+
+        assertTrue(statement.contains("Amount owed is 9.5"));
+        assertTrue(statement.contains("You earned 3 frequent renter points"));
+    }
+
+    @Test
+    @DisplayName("CHARACTERIZATION: HTML formatter calculates correct totals")
+    public void characterizeHtmlFormatterCalculation() {
+        Customer customer = new Customer("Test");
+        customer.addRental(new Rental(new RegularMovie("Movie A"), 3));
+        customer.addRental(new Rental(new NewReleaseMovie("Movie B"), 2));
+
+        String statement = customer.generateStatement(new movierental.formatters.HtmlStatementFormatter());
+
+        assertTrue(statement.contains("<em>9.5</em>"));
+        assertTrue(statement.contains("<em>3</em> frequent renter points"));
     }
     
     @Test

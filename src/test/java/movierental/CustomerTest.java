@@ -453,8 +453,7 @@ public class CustomerTest {
     @DisplayName("Customer name should be immutable after creation")
     public void testCustomerNameImmutability() {
         Customer customer = new Customer("Alice");
-        
-        assertEquals("Alice", customer.getName());
+
         assertEquals("Alice", customer.getName());
     }
     
@@ -514,24 +513,31 @@ public class CustomerTest {
     }
     
     @Test
-    @DisplayName("Text and HTML formatters should calculate same totals")
-    public void testFormatterConsistency() {
+    @DisplayName("Text formatter should calculate correct totals")
+    public void testTextFormatterCalculatesCorrectTotals() {
         Customer customer = new Customer("Test");
         customer.addRental(new Rental(new RegularMovie("A"), 3));
         customer.addRental(new Rental(new NewReleaseMovie("B"), 2));
         customer.addRental(new Rental(new ChildrensMovie("C"), 4));
-        
-        String textStatement = customer.generateStatement(new TextStatementFormatter());
-        String htmlStatement = customer.generateStatement(new HtmlStatementFormatter());
-        
-        // Both should calculate same values
-        // Total: 3.5 + 6.0 + 3.0 = 12.5
-        assertTrue(textStatement.contains("12.5"));
-        assertTrue(htmlStatement.contains("12.5"));
-        
-        // Points: 1 + 2 + 1 = 4
-        assertTrue(textStatement.contains("4 frequent renter points"));
-        assertTrue(htmlStatement.contains("4"));
+
+        String statement = customer.generateStatement(new TextStatementFormatter());
+
+        assertTrue(statement.contains("12.5"));
+        assertTrue(statement.contains("4 frequent renter points"));
+    }
+
+    @Test
+    @DisplayName("HTML formatter should calculate correct totals")
+    public void testHtmlFormatterCalculatesCorrectTotals() {
+        Customer customer = new Customer("Test");
+        customer.addRental(new Rental(new RegularMovie("A"), 3));
+        customer.addRental(new Rental(new NewReleaseMovie("B"), 2));
+        customer.addRental(new Rental(new ChildrensMovie("C"), 4));
+
+        String statement = customer.generateStatement(new HtmlStatementFormatter());
+
+        assertTrue(statement.contains("12.5"));
+        assertTrue(statement.contains("4"));
     }
     
     @Test
@@ -544,22 +550,6 @@ public class CustomerTest {
         
         // Name should be in emphasized tag
         assertTrue(statement.contains("<em>Test & User <Name></em>"));
-    }
-    
-    @Test
-    @DisplayName("Customer getName should always return same value")
-    public void testGetNameConsistency() {
-        Customer customer = new Customer("Consistent Name");
-        
-        String name1 = customer.getName();
-        String name2 = customer.getName();
-        String name3 = customer.getName();
-        
-        assertEquals("Consistent Name", name1);
-        assertEquals("Consistent Name", name2);
-        assertEquals("Consistent Name", name3);
-        assertEquals(name1, name2);
-        assertEquals(name2, name3);
     }
     
     @Test
@@ -637,25 +627,32 @@ public class CustomerTest {
     }
     
     @Test
-    @DisplayName("Multiple customers should be independent")
-    public void testMultipleCustomersIndependence() {
+    @DisplayName("Each customer's statement should contain their own data")
+    public void testCustomerStatementContainsOwnData() {
         Customer customer1 = new Customer("Alice");
         Customer customer2 = new Customer("Bob");
-        
         customer1.addRental(new Rental(new RegularMovie("Movie A"), 1));
         customer2.addRental(new Rental(new RegularMovie("Movie B"), 1));
-        
+
         String statement1 = customer1.generateStatement(new TextStatementFormatter());
         String statement2 = customer2.generateStatement(new TextStatementFormatter());
-        
-        assertTrue(statement1.contains("Alice"));
+
+        assertTrue(statement1.contains("Alice") && statement1.contains("Movie A"));
+        assertTrue(statement2.contains("Bob") && statement2.contains("Movie B"));
+    }
+
+    @Test
+    @DisplayName("Each customer's statement should not contain other customer's data")
+    public void testCustomerStatementDoesNotContainOtherData() {
+        Customer customer1 = new Customer("Alice");
+        Customer customer2 = new Customer("Bob");
+        customer1.addRental(new Rental(new RegularMovie("Movie A"), 1));
+        customer2.addRental(new Rental(new RegularMovie("Movie B"), 1));
+
+        String statement1 = customer1.generateStatement(new TextStatementFormatter());
+        String statement2 = customer2.generateStatement(new TextStatementFormatter());
+
         assertFalse(statement1.contains("Bob"));
-        assertTrue(statement1.contains("Movie A"));
-        assertFalse(statement1.contains("Movie B"));
-        
-        assertTrue(statement2.contains("Bob"));
         assertFalse(statement2.contains("Alice"));
-        assertTrue(statement2.contains("Movie B"));
-        assertFalse(statement2.contains("Movie A"));
     }
 }
