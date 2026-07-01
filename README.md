@@ -24,14 +24,36 @@ The purpose of this is to provide good examples for the refactoring workshop.
 
 ## Build
 
-All you need to build this project is Java 11 or later, Maven 3.0 or later.
+All you need is [Python](https://www.python.org/downloads/) 3.10 or later.
+
+**macOS / Linux**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[test]"
+```
+
+**Windows**
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e ".[test]"
+```
 
 ## Testing
 
-Unit tests can be run using maven[1]:
+Unit tests can be run using pytest[1]:
 
-    $ mvn test
+    $ pytest
 
-[1]: http://maven.apache.org/
+[1]: https://docs.pytest.org/
 
-Tests are located in the test directory and run using Junit.
+Tests are located in the `tests/` directory.
+
+## Code Guidelines
+
+Coding standards for this workshop are documented under `code-guidelines/`:
+- `core-standards.md` — language-agnostic principles
+- `python.md` — Python-specific conventions
