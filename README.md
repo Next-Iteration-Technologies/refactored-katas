@@ -27,7 +27,7 @@ The purpose of this is to provide good examples for the refactoring workshop.
 
 ## Requirements
 
-All you need is [Python](https://www.python.org/downloads/) 3.10 or later.
+All you need is [Python](https://www.python.org/downloads/) 3.9 or later.
 
 **macOS / Linux**
 

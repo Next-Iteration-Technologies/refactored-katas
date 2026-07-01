@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "refactored-katas"
 version = "0.1.0"
 description = "Python Refactoring Katas (Movie Rental, Gilded Rose)"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

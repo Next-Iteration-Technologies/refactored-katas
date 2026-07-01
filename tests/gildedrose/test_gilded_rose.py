@@ -6,12 +6,15 @@ sell date can gain/lose quality twice in the same update). They exist as a
 safety net for refactoring, not as a spec of desired behaviour.
 """
 
+from gildedrose.aged_brie import AgedBrie
+from gildedrose.backstage_passes import BackstagePasses
 from gildedrose.gilded_rose import GildedRose
 from gildedrose.item import Item
+from gildedrose.sulfuras import Sulfuras
 
-AGED_BRIE = "Aged Brie"
-SULFURAS = "Sulfuras, Hand of Ragnaros"
-BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+AGED_BRIE = AgedBrie.item_name
+SULFURAS = Sulfuras.item_name
+BACKSTAGE_PASSES = BackstagePasses.item_name
 NORMAL_ITEM = "+5 Dexterity Vest"
 
 

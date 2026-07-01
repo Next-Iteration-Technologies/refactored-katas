@@ -211,3 +211,118 @@ only a low value and a high value misses the most likely defect location.
 
 **How to apply:** Use `@pytest.mark.parametrize` (or the equivalent in your test framework)
 with all four cases. Treat the "at threshold" case as a required row, not an optional one.
+
+---
+
+## 12. Prefer Subclassing the Domain Object Over a Parallel Strategy Hierarchy When the Constructor Must Stay Flat
+
+**What:** When eliminating a type-code switch statement, don't automatically reach for a
+separate `XxxStrategy`/`XxxHandler` hierarchy. If callers depend on a fixed constructor (e.g.
+`DomainObject(discriminator, ...other_fields)`) and the domain object already holds all the
+state the varying behavior needs, make the domain class itself the polymorphic base instead:
+dispatch to the right subclass from `__new__` based on the discriminating field, combined with
+`__init_subclass__` self-registration so the base never imports its subclasses.
+
+```python
+class Base:
+    type_key: str | None = None
+    _subclasses_by_key = {}
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if cls.type_key is not None:
+            Base._subclasses_by_key[cls.type_key] = cls
+
+    def __new__(cls, discriminator, *args, **kwargs):
+        if cls is Base:
+            if discriminator in cls._subclasses_by_key:
+                cls = cls._subclasses_by_key[discriminator]
+            else:
+                cls = Base
+        return super().__new__(cls)
+```
+
+**Why it matters:** A Strategy/Handler hierarchy is the textbook answer to a switch statement,
+but it adds a second class hierarchy shadowing the domain one. When polymorphism is wanted *on
+the domain object itself*, the `__new__`-dispatch pattern delivers true polymorphism
+(`type(instance) is ConcreteSubtype`) while every existing call site
+(`Base(discriminator, ...)`) keeps working unchanged.
+
+**How to apply:** Only reach for this when the constructor signature is a contract you must not
+break. If callers can be changed freely, a plain Strategy/Handler object is simpler and doesn't
+need the `__new__` trick.
+
+---
+
+## 13. Trigger Subclass Self-Registration From the Package `__init__.py`, Not the Base Module
+
+**What:** When subclasses self-register into a base class's dispatch table via
+`__init_subclass__` (see #12), something must import each subclass module so the registration
+code actually runs — but the base module importing them would recreate the circular-import
+problem from #9. Put those imports in the package's `__init__.py` instead.
+
+**Why it matters:** `from package.submodule import X` always executes `package/__init__.py`
+first. Importing every subclass module there guarantees each is registered before any caller
+can construct an instance, regardless of which submodule they import directly — without the
+base module ever needing to know its subclasses exist.
+
+**How to apply:** In `__init__.py`, import every subclass module (even only for the
+registration side effect) and expose the public names via `__all__`.
+
+---
+
+## 14. Audit `from __future__ import annotations` Per File — Don't Blanket-Apply It
+
+**What:** Only the file(s) that actually contain a self-referential forward reference (a class
+naming itself in its own body) or a union written as `X | Y` on an interpreter below 3.10 need
+`from __future__ import annotations`. Don't add it to every file in a package "for
+consistency" with the one file that needs it.
+
+**Why it matters:** Verified empirically: removing the future import from a file that only uses
+plain hints (e.g. `-> None`, `-> int`) never breaks anything, but removing it from the one file
+where a class names itself in its own body (e.g. `_registry: dict[str, type["Base"]] = {}`
+inside `class Base`) throws `NameError` (the name isn't bound yet while its own class body is
+still executing) — confirmed by executing the class body without the import and reading the
+traceback. Copy-pasting the import everywhere hides which files actually depend on it.
+
+**How to apply:** Before adding the future import to a file, check whether it contains (a) a
+forward reference to its own class, or (b) `X | Y` syntax that must run on Python < 3.10. If
+neither, skip it — and if in doubt, test removal and read the actual error.
+
+---
+
+## 15. Verify Declared Environment Claims Match the Interpreter Actually Used
+
+**What:** When a `pyproject.toml` (or similar manifest) declares a version floor like
+`requires-python`, check what interpreter is actually resolving and running the test suite
+before trusting the declared number. If they diverge, explicitly decide whether to provision
+the declared version or lower the claim to match reality — then grep for the same fact restated
+elsewhere (e.g. a README "Requirements" section) so the fix doesn't leave the project
+internally contradictory.
+
+**Why it matters:** Tests passing proves nothing about a version floor that isn't the version
+actually running them — this class of drift lives in project metadata, not in any single file,
+so a per-file code review misses it entirely. The same fact is often restated in more than one
+place (a manifest field, a README prerequisites section, a CI config, a Dockerfile base image),
+and each restatement is a separate opportunity to drift out of sync with reality.
+
+**How to apply:** Compare the interpreter/runtime version actually in use against the declared
+floor in the manifest. If they don't match, either provision the declared version or lower the
+declaration to match reality — then search docs/config for the same fact restated elsewhere
+(README prerequisites, CI matrix, Dockerfile, etc.) before considering the fix complete.
+
+---
+
+## 16. Source Test Constants From Production Constants, Not Re-Declared Literals
+
+**What:** When production code already exposes a named constant for a domain value (e.g. a
+class attribute or module-level constant identifying a variant), tests should reference that
+constant instead of re-declaring the same literal string/number locally.
+
+**Why it matters:** Two independent copies of the same value look identical today but have no
+mechanism to catch drift — if the production value ever changes, a locally duplicated test
+literal goes silently stale instead of failing loudly.
+
+**How to apply:** Before writing `SOME_CONST = "literal value"` in a test file, check whether
+production code already exposes that value as a class/module attribute; if so, alias it
+(`SOME_CONST = ProductionClass.attribute`) instead of retyping the literal.
