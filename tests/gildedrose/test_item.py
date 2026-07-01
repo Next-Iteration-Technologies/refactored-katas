@@ -4,6 +4,7 @@ name-based subclass dispatch performed by Item.__new__.
 
 from gildedrose.aged_brie import AgedBrie
 from gildedrose.backstage_passes import BackstagePasses
+from gildedrose.conjured import Conjured
 from gildedrose.item import Item
 from gildedrose.sulfuras import Sulfuras
 
@@ -30,6 +31,11 @@ class TestSubclassDispatch:
         item = Item(BackstagePasses.item_name, 10, 20)
 
         assert type(item) is BackstagePasses
+
+    def test_conjured_name_creates_a_conjured_instance(self):
+        item = Item(Conjured.item_name, 10, 20)
+
+        assert type(item) is Conjured
 
 
 class TestNormalItemUpdate:
