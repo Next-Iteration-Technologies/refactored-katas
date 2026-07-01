@@ -3,10 +3,10 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "movie-rental"
+name = "refactored-katas"
 version = "0.1.0"
-description = "Python port of the Movie Rental refactoring kata"
-requires-python = ">=3.10"
+description = "Python Refactoring Katas (Movie Rental, Gilded Rose)"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

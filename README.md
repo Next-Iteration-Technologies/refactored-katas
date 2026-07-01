@@ -24,6 +24,9 @@ The purpose of this is to provide good examples for the refactoring workshop.
 
 ## Build
 
+
+## Requirements
+
 All you need is [Python](https://www.python.org/downloads/) 3.10 or later.
 
 **macOS / Linux**
