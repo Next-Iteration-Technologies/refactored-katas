@@ -2,11 +2,15 @@ from gildedrose.item import Item
 
 
 class BackstagePasses(Item):
+    """Item whose quality rises in tiers as the concert approaches, then
+    drops to zero once the concert has passed.
+    """
+
     item_name = "Backstage passes to a TAFKAL80ETC concert"
     MEDIUM_LEAD_DAYS = 10
     SHORT_LEAD_DAYS = 5
 
-    def update(self):
+    def update(self) -> None:
         self._increase_quality()
         if self.sell_in <= self.MEDIUM_LEAD_DAYS:
             self._increase_quality()

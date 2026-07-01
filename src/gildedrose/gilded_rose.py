@@ -1,8 +1,13 @@
-class GildedRose:
+from gildedrose.item import Item
 
-    def __init__(self, items):
+
+class GildedRose:
+    """Runs the nightly quality/sell_in update across a shop's inventory."""
+
+    def __init__(self, items: list[Item]) -> None:
         self.items = items
 
-    def update_quality(self):
+    def update_quality(self) -> None:
+        """Apply one day's update to every item in the inventory."""
         for item in self.items:
             item.update()

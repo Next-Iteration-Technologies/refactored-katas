@@ -2,7 +2,9 @@ from gildedrose.item import Item
 
 
 class Sulfuras(Item):
+    """Legendary item: quality and sell_in never change."""
+
     item_name = "Sulfuras, Hand of Ragnaros"
 
-    def update(self):
+    def update(self) -> None:
         pass  # legendary item: sell_in and quality never change
