@@ -108,7 +108,17 @@ class BackstagePassTest {
     void backstagePassQualityStaysZeroAfterConcert() {
         BackstagePass pass = new BackstagePass(-5, 0);
         pass.updateQuality();
-        
+
+        assertEquals(-6, pass.getSellIn());
+        assertEquals(0, pass.getQuality());
+    }
+
+    @Test
+    @DisplayName("BackstagePass already expired with non-zero quality resets to zero")
+    void backstagePassAlreadyExpiredResetsNonZeroQualityToZero() {
+        BackstagePass pass = new BackstagePass(-5, 20);
+        pass.updateQuality();
+
         assertEquals(-6, pass.getSellIn());
         assertEquals(0, pass.getQuality());
     }

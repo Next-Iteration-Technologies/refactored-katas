@@ -6,15 +6,19 @@ public class GildedRose {
     private final Item[] items;
 
     public GildedRose(Item[] items) {
-        this.items = items;
-        replaceWithSpecializedItems();
+        this.items = Arrays.stream(items)
+                .map(GildedRose::createSpecializedItem)
+                .toArray(Item[]::new);
     }
 
-    private void replaceWithSpecializedItems() {
-        Arrays.setAll(items, i -> createSpecializedItem(items[i]));
+    public Item[] getItems() {
+        return items;
     }
 
-    private Item createSpecializedItem(Item item) {
+    private static Item createSpecializedItem(Item item) {
+        if (item.getClass() != Item.class) {
+            return item;
+        }
         return Item.create(item.getName(), item.getSellIn(), item.getQuality());
     }
 

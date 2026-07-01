@@ -48,6 +48,16 @@ class ItemFactoryTest {
     }
 
     @Test
+    @DisplayName("Factory creates Conjured for 'Conjured Mana Cake' (prefix match) preserving name")
+    void factoryCreatesConjuredForConjuredPrefixVariant() {
+        Item item = ItemFactory.createItem("Conjured Mana Cake", 10, 20);
+        assertInstanceOf(Conjured.class, item);
+        assertEquals("Conjured Mana Cake", item.getName());
+        assertEquals(10, item.getSellIn());
+        assertEquals(20, item.getQuality());
+    }
+
+    @Test
     @DisplayName("Factory creates normal Item for unknown name")
     void factoryCreatesNormalItemForUnknownName() {
         Item item = ItemFactory.createItem("Normal Item", 10, 20);
