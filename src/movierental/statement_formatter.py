@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 class StatementFormatter(ABC):
     """Renders a customer's rental statement as header, body, and footer sections."""
 
+    HEADER_LABEL = "Rental Record for"
+    AMOUNT_OWED_LABEL = "Amount owed is"
+    POINTS_EARNED_LABEL = "You earned"
+    POINTS_EARNED_SUFFIX = "frequent renter points"
+
     def format(self, customer: Customer) -> str:
         return self._header(customer) + self._body(customer) + self._footer(customer)
 

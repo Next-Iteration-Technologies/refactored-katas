@@ -6,6 +6,7 @@ from movierental.movietypes.childrens_movie import ChildrensMovie
 from movierental.movietypes.new_release_movie import NewReleaseMovie
 from movierental.movietypes.regular_movie import RegularMovie
 from movierental.rental import Rental
+from movierental.statement_formatter import StatementFormatter
 
 
 # --- Fixtures / helpers ---
@@ -23,7 +24,7 @@ def make_rental(title, movie_class, days):
 
 def test_html_formatter_header(customer):
     statement = HtmlStatementFormatter().format(customer)
-    assert statement.startswith("<h1>Rental Record for <em>Alice</em></h1>\n<table>\n")
+    assert statement.startswith(f"<h1>{StatementFormatter.HEADER_LABEL} <em>Alice</em></h1>\n<table>\n")
 
 
 def test_html_formatter_rental_line(customer):
@@ -35,15 +36,20 @@ def test_html_formatter_rental_line(customer):
 def test_html_formatter_footer(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 2))
     statement = HtmlStatementFormatter().format(customer)
-    assert "<p>Amount owed is <em>2.0</em></p>\n" in statement
-    assert statement.endswith("<p>You earned <em>1</em> frequent renter points</p>")
+    assert f"<p>{StatementFormatter.AMOUNT_OWED_LABEL} <em>2.0</em></p>\n" in statement
+    assert statement.endswith(
+        f"<p>{StatementFormatter.POINTS_EARNED_LABEL} <em>1</em> {StatementFormatter.POINTS_EARNED_SUFFIX}</p>"
+    )
 
 
 def test_html_formatter_no_rentals(customer):
     statement = HtmlStatementFormatter().format(customer)
     assert "<table>\n</table>\n" in statement
-    assert "<p>Amount owed is <em>0.0</em></p>\n" in statement
-    assert "<p>You earned <em>0</em> frequent renter points</p>" in statement
+    assert f"<p>{StatementFormatter.AMOUNT_OWED_LABEL} <em>0.0</em></p>\n" in statement
+    assert (
+        f"<p>{StatementFormatter.POINTS_EARNED_LABEL} <em>0</em> {StatementFormatter.POINTS_EARNED_SUFFIX}</p>"
+        in statement
+    )
 
 
 def test_html_formatter_rental_lines_appear_in_order(customer):
