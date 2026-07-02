@@ -1,6 +1,6 @@
 """Unit tests for Conjured's double-speed quality degrade rule."""
 
-from gildedrose.conjured import Conjured
+from gildedrose.itemtypes.conjured import Conjured
 
 NAME = Conjured.item_name
 

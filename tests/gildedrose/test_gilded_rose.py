@@ -5,12 +5,12 @@ Per-item business rules are unit-tested in their own test files
 test_conjured.py); this file only proves GildedRose iterates and delegates correctly.
 """
 
-from gildedrose.aged_brie import AgedBrie
-from gildedrose.backstage_passes import BackstagePasses
-from gildedrose.conjured import Conjured
+from gildedrose.itemtypes.aged_brie import AgedBrie
+from gildedrose.itemtypes.backstage_passes import BackstagePasses
+from gildedrose.itemtypes.conjured import Conjured
 from gildedrose.gilded_rose import GildedRose
 from gildedrose.item import Item
-from gildedrose.sulfuras import Sulfuras
+from gildedrose.itemtypes.sulfuras import Sulfuras
 
 NORMAL_ITEM = "+5 Dexterity Vest"
 

@@ -1,6 +1,6 @@
 """Unit tests confirming Sulfuras never changes."""
 
-from gildedrose.sulfuras import Sulfuras
+from gildedrose.itemtypes.sulfuras import Sulfuras
 
 NAME = Sulfuras.item_name
 

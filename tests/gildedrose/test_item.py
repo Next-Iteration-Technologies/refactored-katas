@@ -2,11 +2,11 @@
 name-based subclass dispatch performed by Item.__new__.
 """
 
-from gildedrose.aged_brie import AgedBrie
-from gildedrose.backstage_passes import BackstagePasses
-from gildedrose.conjured import Conjured
+from gildedrose.itemtypes.aged_brie import AgedBrie
+from gildedrose.itemtypes.backstage_passes import BackstagePasses
+from gildedrose.itemtypes.conjured import Conjured
 from gildedrose.item import Item
-from gildedrose.sulfuras import Sulfuras
+from gildedrose.itemtypes.sulfuras import Sulfuras
 
 NORMAL_ITEM = "+5 Dexterity Vest"
 

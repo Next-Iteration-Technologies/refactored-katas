@@ -1,6 +1,6 @@
 """Unit tests for AgedBrie's quality-increase rules."""
 
-from gildedrose.aged_brie import AgedBrie
+from gildedrose.itemtypes.aged_brie import AgedBrie
 
 NAME = AgedBrie.item_name
 

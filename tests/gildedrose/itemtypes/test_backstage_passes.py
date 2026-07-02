@@ -2,7 +2,7 @@
 
 import pytest
 
-from gildedrose.backstage_passes import BackstagePasses
+from gildedrose.itemtypes.backstage_passes import BackstagePasses
 
 NAME = BackstagePasses.item_name
 

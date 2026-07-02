@@ -8,6 +8,5 @@ class GildedRose:
         self.items = items
 
     def update_quality(self) -> None:
-        """Apply one day's update to every item in the inventory."""
         for item in self.items:
             item.update()
