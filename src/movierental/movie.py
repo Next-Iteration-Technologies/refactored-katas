@@ -14,6 +14,6 @@ class Movie(ABC):
     def charge(self, days_rented: int) -> float:
         pass
 
-    @abstractmethod
-    def points(self, days_rented: int) -> int:
-        pass
+    @property
+    def earns_bonus_points(self) -> bool:
+        return False

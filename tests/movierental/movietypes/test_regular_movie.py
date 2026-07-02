@@ -1,6 +1,6 @@
 import pytest
 
-from movierental.regular_movie import RegularMovie
+from movierental.movietypes.regular_movie import RegularMovie
 
 
 @pytest.mark.parametrize("days,expected_charge", [
@@ -13,5 +13,5 @@ def test_regular_movie_charge(days, expected_charge):
     assert RegularMovie("Jaws").charge(days) == expected_charge
 
 
-def test_regular_movie_points():
-    assert RegularMovie("Jaws").points(5) == 1
+def test_regular_movie_does_not_earn_bonus_points():
+    assert RegularMovie("Jaws").earns_bonus_points is False

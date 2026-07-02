@@ -1,4 +1,4 @@
-from movierental.free_days_movie import FreeDaysMovie
+from movierental.movietypes.free_days_movie import FreeDaysMovie
 
 
 class RegularMovie(FreeDaysMovie):

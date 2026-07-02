@@ -1,6 +1,6 @@
 import pytest
 
-from movierental.childrens_movie import ChildrensMovie
+from movierental.movietypes.childrens_movie import ChildrensMovie
 
 
 @pytest.mark.parametrize("days,expected_charge", [
@@ -14,5 +14,5 @@ def test_childrens_movie_charge(days, expected_charge):
     assert ChildrensMovie("Bambi").charge(days) == expected_charge
 
 
-def test_childrens_movie_points():
-    assert ChildrensMovie("Bambi").points(5) == 1
+def test_childrens_movie_does_not_earn_bonus_points():
+    assert ChildrensMovie("Bambi").earns_bonus_points is False

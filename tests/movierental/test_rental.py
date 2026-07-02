@@ -1,6 +1,6 @@
-from movierental.childrens_movie import ChildrensMovie
-from movierental.new_release_movie import NewReleaseMovie
-from movierental.regular_movie import RegularMovie
+from movierental.movietypes.childrens_movie import ChildrensMovie
+from movierental.movietypes.new_release_movie import NewReleaseMovie
+from movierental.movietypes.regular_movie import RegularMovie
 from movierental.rental import Rental
 
 
@@ -26,16 +26,28 @@ def test_rental_charge_delegates_to_movie():
     assert rental.charge() == 3.5
 
 
-def test_rental_points_delegates_to_movie():
-    rental = Rental(NewReleaseMovie("Top Gun"), 2)
-    assert rental.points() == 2
-
-
 def test_rental_charge_with_childrens_movie():
     rental = Rental(ChildrensMovie("Bambi"), 4)
     assert rental.charge() == 3.0
 
 
-def test_rental_points_with_childrens_movie():
+# --- Frequent renter points ---
+
+def test_rental_points_regular_movie_earns_standard_points():
+    rental = Rental(RegularMovie("Jaws"), 5)
+    assert rental.points() == 1
+
+
+def test_rental_points_childrens_movie_earns_standard_points():
     rental = Rental(ChildrensMovie("Bambi"), 4)
     assert rental.points() == 1
+
+
+def test_rental_points_new_release_one_day_earns_standard_points():
+    rental = Rental(NewReleaseMovie("Top Gun"), 1)
+    assert rental.points() == 1
+
+
+def test_rental_points_new_release_multiple_days_earns_bonus_points():
+    rental = Rental(NewReleaseMovie("Top Gun"), 2)
+    assert rental.points() == 2

@@ -1,12 +1,12 @@
 import pytest
 
 from movierental.customer import Customer
-from movierental.childrens_movie import ChildrensMovie
-from movierental.html_statement_formatter import HtmlStatementFormatter
-from movierental.new_release_movie import NewReleaseMovie
-from movierental.regular_movie import RegularMovie
+from movierental.formatters.html_statement_formatter import HtmlStatementFormatter
+from movierental.formatters.text_statement_formatter import TextStatementFormatter
+from movierental.movietypes.childrens_movie import ChildrensMovie
+from movierental.movietypes.new_release_movie import NewReleaseMovie
+from movierental.movietypes.regular_movie import RegularMovie
 from movierental.rental import Rental
-from movierental.text_statement_formatter import TextStatementFormatter
 
 
 # --- Fixtures / helpers ---

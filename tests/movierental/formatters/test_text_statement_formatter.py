@@ -1,9 +1,9 @@
 import pytest
 
 from movierental.customer import Customer
-from movierental.regular_movie import RegularMovie
+from movierental.formatters.text_statement_formatter import TextStatementFormatter
+from movierental.movietypes.regular_movie import RegularMovie
 from movierental.rental import Rental
-from movierental.text_statement_formatter import TextStatementFormatter
 
 
 # --- Fixtures / helpers ---
