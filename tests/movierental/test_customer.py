@@ -2,9 +2,11 @@ import pytest
 
 from movierental.customer import Customer
 from movierental.childrens_movie import ChildrensMovie
+from movierental.html_statement_formatter import HtmlStatementFormatter
 from movierental.new_release_movie import NewReleaseMovie
 from movierental.regular_movie import RegularMovie
 from movierental.rental import Rental
+from movierental.text_statement_formatter import TextStatementFormatter
 
 
 # --- Fixtures / helpers ---
@@ -27,7 +29,7 @@ def test_customer_exposes_name():
 def test_add_rental_accumulates_rentals(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 1))
     customer.add_rental(make_rental("Bambi", ChildrensMovie, 1))
-    statement = customer.statement()
+    statement = customer.statement(TextStatementFormatter())
     assert "\tJaws\t" in statement
     assert "\tBambi\t" in statement
 
@@ -42,7 +44,7 @@ def test_add_rental_accumulates_rentals(customer):
 ])
 def test_regular_movie_charge(customer, days, expected_charge):
     customer.add_rental(make_rental("Jaws", RegularMovie, days))
-    assert f"\tJaws\t{expected_charge}\n" in customer.statement()
+    assert f"\tJaws\t{expected_charge}\n" in customer.statement(TextStatementFormatter())
 
 
 # --- New release movie charges ---
@@ -54,7 +56,7 @@ def test_regular_movie_charge(customer, days, expected_charge):
 ])
 def test_new_release_charge(customer, days, expected_charge):
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, days))
-    assert f"\tTop Gun\t{expected_charge}\n" in customer.statement()
+    assert f"\tTop Gun\t{expected_charge}\n" in customer.statement(TextStatementFormatter())
 
 
 # --- Children's movie charges ---
@@ -68,79 +70,79 @@ def test_new_release_charge(customer, days, expected_charge):
 ])
 def test_childrens_movie_charge(customer, days, expected_charge):
     customer.add_rental(make_rental("Bambi", ChildrensMovie, days))
-    assert f"\tBambi\t{expected_charge}\n" in customer.statement()
+    assert f"\tBambi\t{expected_charge}\n" in customer.statement(TextStatementFormatter())
 
 
 # --- Frequent renter points ---
 
 def test_regular_rental_earns_one_point(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 5))
-    assert "You earned 1 frequent renter points" in customer.statement()
+    assert "You earned 1 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 def test_childrens_rental_earns_one_point(customer):
     customer.add_rental(make_rental("Bambi", ChildrensMovie, 5))
-    assert "You earned 1 frequent renter points" in customer.statement()
+    assert "You earned 1 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 def test_new_release_one_day_earns_one_point(customer):
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 1))
-    assert "You earned 1 frequent renter points" in customer.statement()
+    assert "You earned 1 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 def test_new_release_two_days_earns_two_points(customer):
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 2))
-    assert "You earned 2 frequent renter points" in customer.statement()
+    assert "You earned 2 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 def test_new_release_three_days_earns_two_points(customer):
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 3))
-    assert "You earned 2 frequent renter points" in customer.statement()
+    assert "You earned 2 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 def test_multiple_rentals_accumulate_points(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 1))
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 2))
     customer.add_rental(make_rental("Bambi", ChildrensMovie, 1))
-    assert "You earned 4 frequent renter points" in customer.statement()
+    assert "You earned 4 frequent renter points" in customer.statement(TextStatementFormatter())
 
 
 # --- Statement format ---
 
 def test_statement_starts_with_customer_name(customer):
-    assert customer.statement().startswith("Rental Record for Alice\n")
+    assert customer.statement(TextStatementFormatter()).startswith("Rental Record for Alice\n")
 
 
 def test_statement_rental_line_format(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 2))
-    assert "\tJaws\t2.0\n" in customer.statement()
+    assert "\tJaws\t2.0\n" in customer.statement(TextStatementFormatter())
 
 
 def test_statement_title_with_spaces(customer):
     customer.add_rental(make_rental("The Dark Knight", RegularMovie, 1))
-    assert "\tThe Dark Knight\t2.0\n" in customer.statement()
+    assert "\tThe Dark Knight\t2.0\n" in customer.statement(TextStatementFormatter())
 
 
 def test_statement_total_is_sum_of_charges(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 2))
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 1))
-    assert "Amount owed is 5.0\n" in customer.statement()
+    assert "Amount owed is 5.0\n" in customer.statement(TextStatementFormatter())
 
 
 def test_statement_rental_lines_appear_in_order(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 1))
     customer.add_rental(make_rental("Bambi", ChildrensMovie, 1))
-    statement = customer.statement()
+    statement = customer.statement(TextStatementFormatter())
     assert statement.index("\tJaws\t") < statement.index("\tBambi\t")
 
 
 def test_statement_ends_without_trailing_newline(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 1))
-    assert customer.statement().endswith("frequent renter points")
+    assert customer.statement(TextStatementFormatter()).endswith("frequent renter points")
 
 
 def test_statement_no_rentals(customer):
-    statement = customer.statement()
+    statement = customer.statement(TextStatementFormatter())
     assert "Amount owed is 0.0\n" in statement
     assert "You earned 0 frequent renter points" in statement
 
@@ -165,33 +167,33 @@ def test_statement_all_movie_types():
         "Amount owed is 19.0\n"
         "You earned 7 frequent renter points"
     )
-    assert customer.statement() == expected
+    assert customer.statement(TextStatementFormatter()) == expected
 
 
 # --- HTML statement format ---
 
 def test_html_statement_starts_with_header(customer):
-    assert customer.html_statement().startswith("<h1>Rental Record for <em>Alice</em></h1>\n<table>\n")
+    assert customer.statement(HtmlStatementFormatter()).startswith("<h1>Rental Record for <em>Alice</em></h1>\n<table>\n")
 
 
 def test_html_statement_rental_line_format(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 2))
-    assert "<tr><td>Jaws</td><td>2.0</td></tr>" in customer.html_statement()
+    assert "<tr><td>Jaws</td><td>2.0</td></tr>" in customer.statement(HtmlStatementFormatter())
 
 
 def test_html_statement_total_is_sum_of_charges(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 2))
     customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 1))
-    assert "<p>Amount owed is <em>5.0</em></p>" in customer.html_statement()
+    assert "<p>Amount owed is <em>5.0</em></p>" in customer.statement(HtmlStatementFormatter())
 
 
 def test_html_statement_ends_without_trailing_newline(customer):
     customer.add_rental(make_rental("Jaws", RegularMovie, 1))
-    assert customer.html_statement().endswith("frequent renter points</p>")
+    assert customer.statement(HtmlStatementFormatter()).endswith("frequent renter points</p>")
 
 
 def test_html_statement_no_rentals(customer):
-    statement = customer.html_statement()
+    statement = customer.statement(HtmlStatementFormatter())
     assert "<p>Amount owed is <em>0.0</em></p>" in statement
     assert "<p>You earned <em>0</em> frequent renter points</p>" in statement
 
@@ -210,4 +212,4 @@ def test_html_statement_matches_requirements_example():
         "<p>Amount owed is <em>5.5</em></p>\n"
         "<p>You earned <em>2</em> frequent renter points</p>"
     )
-    assert customer.html_statement() == expected
+    assert customer.statement(HtmlStatementFormatter()) == expected

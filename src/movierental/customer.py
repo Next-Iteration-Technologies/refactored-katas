@@ -1,6 +1,5 @@
-from movierental.html_statement_formatter import HtmlStatementFormatter
 from movierental.rental import Rental
-from movierental.text_statement_formatter import TextStatementFormatter
+from movierental.statement_formatter import StatementFormatter
 
 
 class Customer:
@@ -28,8 +27,5 @@ class Customer:
     def total_points(self) -> int:
         return sum(rental.points() for rental in self._rentals)
 
-    def statement(self) -> str:
-        return TextStatementFormatter().format(self)
-
-    def html_statement(self) -> str:
-        return HtmlStatementFormatter().format(self)
+    def statement(self, formatter: StatementFormatter) -> str:
+        return formatter.format(self)
