@@ -166,3 +166,48 @@ def test_statement_all_movie_types():
         "You earned 7 frequent renter points"
     )
     assert customer.statement() == expected
+
+
+# --- HTML statement format ---
+
+def test_html_statement_starts_with_header(customer):
+    assert customer.html_statement().startswith("<h1>Rental Record for <em>Alice</em></h1>\n<table>\n")
+
+
+def test_html_statement_rental_line_format(customer):
+    customer.add_rental(make_rental("Jaws", RegularMovie, 2))
+    assert "<tr><td>Jaws</td><td>2.0</td></tr>" in customer.html_statement()
+
+
+def test_html_statement_total_is_sum_of_charges(customer):
+    customer.add_rental(make_rental("Jaws", RegularMovie, 2))
+    customer.add_rental(make_rental("Top Gun", NewReleaseMovie, 1))
+    assert "<p>Amount owed is <em>5.0</em></p>" in customer.html_statement()
+
+
+def test_html_statement_ends_without_trailing_newline(customer):
+    customer.add_rental(make_rental("Jaws", RegularMovie, 1))
+    assert customer.html_statement().endswith("frequent renter points</p>")
+
+
+def test_html_statement_no_rentals(customer):
+    statement = customer.html_statement()
+    assert "<p>Amount owed is <em>0.0</em></p>" in statement
+    assert "<p>You earned <em>0</em> frequent renter points</p>" in statement
+
+
+def test_html_statement_matches_requirements_example():
+    customer = Customer("martin")
+    customer.add_rental(make_rental("Ran", RegularMovie, 3))
+    customer.add_rental(make_rental("Trois Couleurs: Bleu", RegularMovie, 2))
+
+    expected = (
+        "<h1>Rental Record for <em>martin</em></h1>\n"
+        "<table>\n"
+        "  <tr><td>Ran</td><td>3.5</td></tr>\n"
+        "  <tr><td>Trois Couleurs: Bleu</td><td>2.0</td></tr>\n"
+        "</table>\n"
+        "<p>Amount owed is <em>5.5</em></p>\n"
+        "<p>You earned <em>2</em> frequent renter points</p>"
+    )
+    assert customer.html_statement() == expected

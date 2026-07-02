@@ -1,4 +1,6 @@
+from movierental.html_statement_formatter import HtmlStatementFormatter
 from movierental.rental import Rental
+from movierental.text_statement_formatter import TextStatementFormatter
 
 
 class Customer:
@@ -14,19 +16,20 @@ class Customer:
     def name(self) -> str:
         return self._name
 
-    def _format_rental_line(self, rental: Rental) -> str:
-        return f"\t{rental.title}\t{rental.charge()}\n"
+    @property
+    def rentals(self) -> tuple[Rental, ...]:
+        return tuple(self._rentals)
+
+    @property
+    def total_amount(self) -> float:
+        return sum((rental.charge() for rental in self._rentals), 0.0)
+
+    @property
+    def total_points(self) -> int:
+        return sum(rental.points() for rental in self._rentals)
 
     def statement(self) -> str:
-        total_amount = 0.0
-        total_points = 0
-        rental_lines = []
+        return TextStatementFormatter().format(self)
 
-        for rental in self._rentals:
-            total_amount += rental.charge()
-            total_points += rental.points()
-            rental_lines.append(self._format_rental_line(rental))
-
-        header = f"Rental Record for {self.name}\n"
-        footer = f"Amount owed is {total_amount}\nYou earned {total_points} frequent renter points"
-        return header + "".join(rental_lines) + footer
+    def html_statement(self) -> str:
+        return HtmlStatementFormatter().format(self)
