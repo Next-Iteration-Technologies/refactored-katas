@@ -2,7 +2,6 @@ from gildedrose.item import Item
 
 
 class Sulfuras(Item):
-    """Legendary item: quality and sell_in never change."""
 
     item_name = "Sulfuras, Hand of Ragnaros"
 
